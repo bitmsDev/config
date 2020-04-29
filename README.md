@@ -14,15 +14,22 @@
       -sha256 -days 1024 -out /etc/nginx/ssl/localhostCA.pem
 ```
 
-**STEP 3 «create the file for X.509 v3»**
+**STEP 3 «create a certificate for a personal domain name»**
+
 ```
-    $ sudo nano /etc/nginx/ssl/x509v3.ext
+    $ echo "127.0.0.1  example.local" >> /etc/hosts
+    $ mkdir -p /etc/nginx/ssl/example.local
 ```
 
-**STEP 3.1 «write context for X.509 v3»**
+
+**STEP 3.1 «create the file for X.509 v3»**
+```
+    $ sudo nano /etc/nginx/ssl/example.local/x509v3.ext
+```
+
+**STEP 3.2 «write context for X.509 v3»**
 
 _**example.local** - This is a custom local domain name._ 
-
 ```
 authorityKeyIdentifier = keyid, issuer
 basicConstraints = CA: FALSE
@@ -32,21 +39,14 @@ subjectAltName = @alt_names
 DNS.1 = example.local
 ```
 
-**STEP 4 «create a certificate for a personal domain name»**
-
-```
-    $ echo "127.0.0.1  example.local" >> /etc/hosts
-    $ mkdir -p /etc/nginx/ssl/example.local
-```
-
-**STEP 4.1 «create private key and signature»**
+**STEP 3.3 «create private key and signature»**
 
 ```
     $ sudo openssl req -new -nodes -out /etc/nginx/ssl/example.local/certificate.csr \ 
       -newkey rsa:2048 -keyout /etc/nginx/ssl/example.local/private.key
 ```
 
-**STEP 4.2 «create private key and signature»**
+**STEP 3.4 «create private key and signature»**
 
 ```
     $ sudo openssl x509 -req -in /etc/nginx/ssl/example.local/certificate.csr \
@@ -55,7 +55,7 @@ DNS.1 = example.local
       -days 500 -sha256 -extfile /etc/nginx/ssl/example.local/x509v3.ext
 ```
 
-**STEP 5 «add private key and certificate in the nginx»**
+**STEP 4 «add private key and certificate in the nginx»**
 
 ```
     $ sudo nano /etc/nginx/config.d/exmaple.conf
