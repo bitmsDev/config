@@ -125,4 +125,4 @@ server {
 
 **STEP 6 «add a certificate for the browser»**
 
-Add [Google Chrome](chrome://settings/certificates)
+Add Google Chrome / Chromium [chrome://settings/certificates](chrome://settings/certificates)
