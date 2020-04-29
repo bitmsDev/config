@@ -1,23 +1,5 @@
 # BitMS Software | Developer Configuration
 
-> Nginx configuration 
-
-```
-#
-#  HTTP2/TSL
-#
-server {
-    
-}
-
-#
-#  DEFAULT :80
-#
-server {
-
-}
-```
-
 > Location SSL
 
 **STEP 1 «create private key»**
@@ -39,7 +21,7 @@ server {
 
 **STEP 3.1 «write context for X.509 v3»**
 
-_**mydomains.local** - This is a custom local domain name._ 
+_**example.local** - This is a custom local domain name._ 
 
 ```
 authorityKeyIdentifier = keyid, issuer
@@ -47,6 +29,100 @@ basicConstraints = CA: FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = mydomains.local
+DNS.1 = example.local
 ```
 
+**STEP 4 «create a certificate for a personal domain name»**
+
+```
+    $ echo "127.0.0.1  example.local" >> /etc/hosts
+    $ mkdir -p /etc/nginx/ssl/example.local
+```
+
+**STEP 4.1 «create private key and signature»**
+
+```
+    $ sudo openssl req -new -nodes -out /etc/nginx/ssl/example.local/certificate.csr \ 
+      -newkey rsa:2048 -keyout /etc/nginx/ssl/example.local/private.key
+```
+
+**STEP 4.2 «create private key and signature»**
+
+```
+    $ sudo openssl x509 -req -in /etc/nginx/ssl/example.local/certificate.csr \
+      -CA /etc/nginx/ssl/localhostCA.pem -CAkey /etc/nginx/ssl/localhostCA.key \
+      -CAcreateserial -out /etc/nginx/ssl/example.local/certificate.crt \
+      -days 500 -sha256 -extfile /etc/nginx/ssl/example.local/x509v3.ext
+```
+
+**STEP 5 «add private key and certificate in the nginx»**
+
+```
+    $ sudo nano /etc/nginx/config.d/exmaple.conf
+```
+
+_configuration nginx_
+```
+server {
+
+    #
+    #   Install 443 port and http2 - this is Nginx module
+    #
+    listen 443 ssl http2;
+
+    server_name example.local;
+
+    #
+    #   Nginx module settings
+    #
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers "EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA256:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA384:EDH+aRSA+AESGCM:EDH+aRSA+SHA256:EDH+aRSA:EECDH:!aNULL:!eNULL:!MEDIUM:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS:!RC4:!SEED";
+
+    #
+    #   Include file private key and certificate
+    #
+    ssl_certificate /etc/nginx/ssl/example.local/certificate.crt;
+    ssl_certificate_key /etc/nginx/ssl/example.local/private.key;
+
+    root /var/www/example/html;
+
+    index index.php index.html;
+
+
+    # ... add other nginx configuration
+}
+```
+**If redirect**
+```
+#
+#   Append /etc/nginx/config.d/example.conf
+#
+server {
+    #
+    # Default port
+    #
+    listen 80;
+    listen [::]:80;
+
+    charset utf8;
+    
+    error_log /var/log/nginx/80-error.log;
+
+    server_name example.local;
+
+    if ($host = example.local) {
+        return 301 https://$host$request_uri;
+    }
+
+}
+```
+
+**Nginx reload, init new configuration**
+```
+    $ systemctl restart nginx.service
+```
+
+**STEP 6 «add a certificate for the browser»**
+
+Add [Google Chrome](chrome://settings/certificates)
