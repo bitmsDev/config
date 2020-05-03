@@ -14,10 +14,11 @@
 
 **Status: error**
 
-|          |          |          |           |           |
+| | | | | |
 |----------|----------|----------|-----------|-----------|
 | # | code | event | message | action |
-| 1 | 500 | Create Payment | Provider not found! | Add new provider | 
+| 1 | ``404`` | ``Create Payment`` | ``Provider not found!`` | **Add new provider** | 
+| 2 | ``403`` | ``Input payment data`` | ``Payment method not access!`` | **Read error log** | 
 
 > Action
 
