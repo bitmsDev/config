@@ -19,6 +19,7 @@
 | # | code | event | message | action |
 | 1 | ``404`` | ``Create Payment`` | ``Provider not found!`` | **Add new provider** | 
 | 2 | ``403`` | ``Input payment data`` | ``Payment method not access!`` | **Read error log** | 
+| 3 | ``500`` | ``Parse payment data`` | ``Invalid {parameter}!`` | **Read error log and request parameters** | 
 
 > Action
 
