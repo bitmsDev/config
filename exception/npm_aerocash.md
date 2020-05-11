@@ -17,13 +17,14 @@
 | | | | | |
 |----------|----------|----------|-----------|-----------|
 | # | code | event | message | action |
-| 1 | ``404`` | ``Create Payment`` | ``Provider not found!`` | **Add new provider** | 
+| 1 | ``404`` | ``Create Payment`` | ``Provider not found!`` | **Add new the provider** | 
 | 2 | ``403`` | ``Input payment data`` | ``Payment method not access!`` | **Read error log** | 
 | 3 | ``500`` | ``Parse payment data`` | ``Invalid {parameter}!`` | **Read error log and request parameters** | 
+| 4 | ``504`` | ```` | ``Invalid {parameter}!`` | **Read error log and request parameters** | 
 
 > Action
 
-**Add new provider**
+**Add new the provider**
 ```http
 curl --location --request POST 'https://api.bitms.ru/v1/provider' \
 --header 'Content-Type: application/json' \
